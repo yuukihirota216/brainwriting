@@ -54,7 +54,7 @@ export default function LoadingIndicator() {
         <div className="hat hat-green"></div>
         <div className="hat hat-white"></div>
       </div>
-      <p className="text-center text-slate-600 mt-4">Analyzing with Six Thinking Hats...</p>
+      <p className="text-center text-slate-600 mt-4">シックスハット思考法で分析中...</p>
     </div>
   );
 }

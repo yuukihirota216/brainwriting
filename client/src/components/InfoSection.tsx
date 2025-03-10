@@ -5,22 +5,22 @@ export default function InfoSection() {
     <div className="grid md:grid-cols-3 gap-6">
       <Card className="shadow-sm border-t-4 border-blue-500">
         <CardContent className="p-4">
-          <h3 className="font-medium text-slate-800 mb-2">What is Six Thinking Hats?</h3>
-          <p className="text-sm text-slate-600">A thinking tool developed by Edward de Bono that promotes different perspectives for comprehensive analysis and decision-making.</p>
+          <h3 className="font-medium text-slate-800 mb-2">シックスハット思考法とは？</h3>
+          <p className="text-sm text-slate-600">エドワード・デボノが開発した思考ツールで、多角的な視点から包括的な分析と意思決定を促進します。</p>
         </CardContent>
       </Card>
       
       <Card className="shadow-sm border-t-4 border-yellow-400">
         <CardContent className="p-4">
-          <h3 className="font-medium text-slate-800 mb-2">How It Works</h3>
-          <p className="text-sm text-slate-600">Enter your text and our AI will analyze it through the perspective of each hat: Process (Blue), Facts (White), Emotions (Red), Benefits (Yellow), Caution (Black), and Creativity (Green).</p>
+          <h3 className="font-medium text-slate-800 mb-2">使い方</h3>
+          <p className="text-sm text-slate-600">テキストを入力すると、AIが各帽子の視点から分析します：プロセス（青）、事実（白）、感情（赤）、利点（黄）、注意点（黒）、創造性（緑）。</p>
         </CardContent>
       </Card>
       
       <Card className="shadow-sm border-t-4 border-green-500">
         <CardContent className="p-4">
-          <h3 className="font-medium text-slate-800 mb-2">Use Cases</h3>
-          <p className="text-sm text-slate-600">Perfect for analyzing business proposals, decision-making, problem-solving, and getting comprehensive feedback on ideas or plans.</p>
+          <h3 className="font-medium text-slate-800 mb-2">活用シーン</h3>
+          <p className="text-sm text-slate-600">ビジネス提案の分析、意思決定、問題解決、アイデアや計画に対する包括的なフィードバックの取得に最適です。</p>
         </CardContent>
       </Card>
     </div>
