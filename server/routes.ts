@@ -39,27 +39,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`APIリクエスト送信: ${DIFY_APP_ID}へ`);
       
-      // Make request to Dify API - テキスト生成モード用の正確なAPIリクエスト形式
+      // Make request to Dify API - 本番環境用のエンドポイントを使用
       const difyResponse = await axios.post(
         `https://api.dify.ai/v1/completion-messages`,
         {
-          // リクエストボディの構造を修正
+          // 本番環境用のリクエストボディ構造
           query: validatedData.input,
           user: "user123",
           response_mode: "blocking",
-          // 入力フィールドを空オブジェクトからundefinedに変更
-          inputs: undefined
+          // 本番環境では必須パラメータのみ送信
+          inputs: {}
         },
         {
           headers: {
-            // API認証ヘッダーの形式を修正
+            // 本番環境用のAPI認証ヘッダー
             'Authorization': `Bearer ${DIFY_API_KEY}`,
             'Content-Type': 'application/json',
-            // ヘッダーのApp-IDの形式を正確に
             'App-ID': DIFY_APP_ID
           }
         }
       );
+      
+      // レスポンスデータの詳細ログ
+      console.log('Dify API Header詳細:', {
+        Authorization: `Bearer ${DIFY_API_KEY.substring(0, 10)}...`,
+        AppID: DIFY_APP_ID,
+        Environment: 'Production'
+      });
       
       console.log('Dify応答内容:', difyResponse.data);
       
