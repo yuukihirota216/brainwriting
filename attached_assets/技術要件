@@ -1,0 +1,11 @@
+以下の技術的要件を満たす必要があります：
+ウェブ技術: ReactとNext.jsを使用してウェブアプリケーションを構築。
+
+API通信: Next.jsのAPIルートを使用してDifyのAPIを呼び出し、入力テキストを送信し、レスポンスを受信。
+
+ローディングアニメーション: CSSアニメーションを使用して、6つの異なる色の帽子を円形に配置し、回転効果を実現。
+
+セキュリティ: APIキーはフロントエンドコード内で平文で公開せず、Next.jsのAPIルートを介して呼び出すことを推奨（Dify Open API Examples | Restackio参照）。
+
+DifyのAPIドキュメント（Developing with APIs | Dify）から、フロントエンドから直接LLM機能を呼び出せる点が特徴的で、External Knowledge API | Difyでは具体的なAPIリクエスト例が示されています。
+

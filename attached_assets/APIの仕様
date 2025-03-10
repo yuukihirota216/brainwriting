@@ -1,0 +1,13 @@
+DifyのAPI仕様は以下の通りと仮定（実際のドキュメントに基づく必要あり）：
+エンドポイント: https://api.dify.ai/v1/applications/{app_id}/invoke
+
+メソッド: POST
+
+リクエストボディ: JSONオブジェクトで、キー"input"に処理対象のテキストを含む。
+
+ヘッダー: Authorization: Bearer {app-jETn58C1c9IS9EaEXl1chB0t}
+
+レスポンス: JSONオブジェクトで、キー"output"に処理済みテキストを含む。
+
+Developing with APIs | Difyから、APIアクセスはアプリケーションレベルで管理され、複数の認証情報を設定可能であることが確認できました。また、Maintain Knowledge via API | Difyでは、APIベースのデータ管理の例が示されています。
+
