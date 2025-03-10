@@ -25,8 +25,8 @@ export default function SixHatsApp() {
     },
     onError: (error) => {
       toast({
-        title: "Error analyzing text",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
+        title: "テキスト分析エラー",
+        description: error instanceof Error ? error.message : "不明なエラーが発生しました",
         variant: "destructive",
       });
     },
@@ -35,8 +35,8 @@ export default function SixHatsApp() {
   const processText = (text: string) => {
     if (!text.trim()) {
       toast({
-        title: "Input required",
-        description: "Please enter some text to analyze.",
+        title: "入力が必要です",
+        description: "分析するテキストを入力してください。",
         variant: "destructive",
       });
       return;

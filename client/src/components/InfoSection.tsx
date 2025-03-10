@@ -5,7 +5,7 @@ export default function InfoSection() {
     <div className="grid md:grid-cols-3 gap-6">
       <Card className="shadow-sm border-t-4 border-blue-500">
         <CardContent className="p-4">
-          <h3 className="font-medium text-slate-800 mb-2">シックスハット思考法とは？</h3>
+          <h3 className="font-medium text-slate-800 mb-2">シックスハット法とは？</h3>
           <p className="text-sm text-slate-600">エドワード・デボノが開発した思考ツールで、多角的な視点から包括的な分析と意思決定を促進します。</p>
         </CardContent>
       </Card>

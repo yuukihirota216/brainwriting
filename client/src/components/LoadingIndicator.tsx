@@ -2,7 +2,7 @@ export default function LoadingIndicator() {
   return (
     <div className="my-8">
       <div className="relative w-20 h-20 mx-auto">
-        <style jsx>{`
+        <style>{`
           .hat {
             position: absolute;
             width: 20px;
@@ -54,7 +54,7 @@ export default function LoadingIndicator() {
         <div className="hat hat-green"></div>
         <div className="hat hat-white"></div>
       </div>
-      <p className="text-center text-slate-600 mt-4">シックスハット思考法で分析中...</p>
+      <p className="text-center text-slate-600 mt-4">シックスハット法で分析中...</p>
     </div>
   );
 }

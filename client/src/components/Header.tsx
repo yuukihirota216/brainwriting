@@ -12,10 +12,10 @@ export default function Header() {
             <div className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-slate-50 border border-slate-200"></div>
           </div>
         </div>
-        <h1 className="text-2xl font-bold text-slate-800">シックスハット思考法 AI</h1>
+        <h1 className="text-2xl font-bold text-slate-800">シックスハット法 AI</h1>
       </div>
       <p className="text-slate-600 max-w-xl mx-auto">
-        シックスハット思考法の視点からテキストを分析します：包括的な思考のための多角的な視点を得られます。
+        シックスハット法の視点からテキストを分析します：包括的な思考のための多角的な視点を得られます。
       </p>
     </header>
   );
