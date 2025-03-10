@@ -39,9 +39,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`APIリクエスト送信: ${DIFY_APP_ID}へ`);
       
-      // Make request to Dify API - Chat Completionエンドポイントを使用
+      // Make request to Dify API - テキスト生成モード用のエンドポイントを使用
       const difyResponse = await axios.post(
-        `https://api.dify.ai/v1/chat-messages`,
+        `https://api.dify.ai/v1/completion-messages`,
         {
           inputs: {},
           query: validatedData.input,
