@@ -7,7 +7,7 @@ import { z } from "zod";
 
 // Define the environment variables schema with fallbacks
 const envSchema = z.object({
-  DIFY_API_KEY: z.string().default("app-jETn58C1c9IS9EaEXl1chB0t"),
+  DIFY_API_KEY: z.string().default(""),
   DIFY_APP_ID: z.string().default("")
 });
 
@@ -24,27 +24,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get the API key and app ID from environment variables
       const { DIFY_API_KEY, DIFY_APP_ID } = env;
       
-      if (!DIFY_APP_ID) {
+      // 環境変数のチェック
+      if (!DIFY_API_KEY) {
         return res.status(500).json({ 
-          message: "DIFY_APP_ID environment variable is not set" 
+          message: "DIFY_API_KEY環境変数が設定されていません" 
         });
       }
       
-      // Make request to Dify API
+      if (!DIFY_APP_ID) {
+        return res.status(500).json({ 
+          message: "DIFY_APP_ID環境変数が設定されていません" 
+        });
+      }
+      
+      console.log(`APIリクエスト送信: ${DIFY_APP_ID}へ`);
+      
+      // Make request to Dify API - Chat Completionエンドポイントを使用
       const difyResponse = await axios.post(
-        `https://api.dify.ai/v1/applications/${DIFY_APP_ID}/invoke`,
-        { input: validatedData.input },
+        `https://api.dify.ai/v1/chat-messages`,
+        {
+          inputs: {},
+          query: validatedData.input,
+          user: "user123",
+          response_mode: "blocking"
+        },
         {
           headers: {
             'Authorization': `Bearer ${DIFY_API_KEY}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-App-ID': DIFY_APP_ID
           }
         }
       );
       
+      console.log('Dify応答内容:', difyResponse.data);
+      
       // Return the response from Dify
       return res.status(200).json({ 
-        output: difyResponse.data.output 
+        output: difyResponse.data.answer || difyResponse.data.message || "応答なし" 
       });
       
     } catch (error) {
@@ -53,7 +70,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Handle validation errors
       if (error instanceof z.ZodError) {
         return res.status(400).json({ 
-          message: "Invalid request data", 
+          message: "無効なリクエストデータ", 
           errors: error.errors 
         });
       }
@@ -62,15 +79,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (axios.isAxiosError(error)) {
         const statusCode = error.response?.status || 500;
         const errorMessage = error.response?.data?.message || error.message;
+        const responseData = error.response?.data || {};
+        
+        console.error('Axios error details:', {
+          status: statusCode,
+          message: errorMessage,
+          data: responseData,
+          headers: error.response?.headers
+        });
         
         return res.status(statusCode).json({ 
-          message: `Dify API error: ${errorMessage}` 
+          message: `Dify APIエラー: ${errorMessage}`,
+          details: responseData
         });
       }
       
       // Handle other errors
       return res.status(500).json({ 
-        message: error instanceof Error ? error.message : "Unknown error occurred" 
+        message: error instanceof Error ? error.message : "不明なエラーが発生しました" 
       });
     }
   });
