@@ -1,10 +1,11 @@
 export default function SixHatsLogo() {
   return (
-    <div className="w-14 h-14 relative">
+    <div className="w-16 h-16 relative">
       <svg
         viewBox="0 0 200 200"
         xmlns="http://www.w3.org/2000/svg"
         className="w-full h-full"
+        preserveAspectRatio="xMidYMid meet"
       >
         {/* 黒い円形の背景 */}
         <circle cx="100" cy="100" r="95" fill="#1a1a1a" />
