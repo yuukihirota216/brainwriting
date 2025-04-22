@@ -21,14 +21,14 @@ class DifyParser {
 
   getMessages() {
     try {
-    const lines = this.buffer.split('\n');
-    const dataRows = lines
-      .filter((line) => line.startsWith('data: '))
-      .map((line) => line.slice(6))
-      .map((line) => JSON.parse(line));
-    const messages = dataRows.filter((dataRow) => dataRow.event === 'message');
+      const lines = this.buffer.split('\n');
+      const dataRows = lines
+        .filter((line) => line.startsWith('data: '))
+        .map((line) => line.slice(6))
+        .map((line) => JSON.parse(line));
+      const messages = dataRows.filter((dataRow) => dataRow.event === 'message');
 
-    return messages;
+      return messages;
     } catch (error) {
       console.error('Error parsing messages:', this.buffer);
       return [];
