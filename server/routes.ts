@@ -1,20 +1,19 @@
 import type { Express } from "express";
-import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { createServer } from "http";
 import { difyRequestSchema } from "@shared/schema";
 import axios from "axios";
 import { z } from "zod";
+import DifyParser from "./lib/difyParser";
 
 // Define the environment variables schema with fallbacks
 const envSchema = z.object({
   DIFY_API_KEY: z.string().default(""),
-  DIFY_APP_ID: z.string().default("")
 });
 
 // Parse environment variables with fallback values
 const env = envSchema.parse(process.env);
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export async function registerRoutes(app: Express) {
   // Dify API endpoint
   app.post('/api/dify', async (req, res) => {
     try {
@@ -22,7 +21,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = difyRequestSchema.parse(req.body);
       
       // Get the API key and app ID from environment variables
-      const { DIFY_API_KEY, DIFY_APP_ID } = env;
+      const { DIFY_API_KEY } = env;
       
       // 環境変数のチェック
       if (!DIFY_API_KEY) {
@@ -31,22 +30,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      if (!DIFY_APP_ID) {
-        return res.status(500).json({ 
-          message: "DIFY_APP_ID環境変数が設定されていません" 
-        });
-      }
-      
-      console.log(`APIリクエスト送信: ${DIFY_APP_ID}へ`);
+      console.log(`APIリクエスト送信`);
       
       // Make request to Dify API - 本番環境用のエンドポイントを使用
       const difyResponse = await axios.post(
-        `https://api.dify.ai/v1/completion-messages`,
+        `https://api.dify.ai/v1/chat-messages`,
         {
           // 本番環境用のリクエストボディ構造
           query: validatedData.input,
           user: "user123",
-          response_mode: "blocking",
+          response_mode: "streaming",
           // 本番環境では必須パラメータのみ送信
           inputs: {}
         },
@@ -54,24 +47,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
           headers: {
             // 本番環境用のAPI認証ヘッダー
             'Authorization': `Bearer ${DIFY_API_KEY}`,
-            'Content-Type': 'application/json',
-            'App-ID': DIFY_APP_ID
-          }
+            'Content-Type': 'application/json'
+          },
+          responseType: 'stream',
         }
       );
-      
-      // レスポンスデータの詳細ログ
-      console.log('Dify API Header詳細:', {
-        Authorization: `Bearer ${DIFY_API_KEY.substring(0, 10)}...`,
-        AppID: DIFY_APP_ID,
-        Environment: 'Production'
+
+      res.setHeader("Content-Type", "text/event-stream");
+      const parser = new DifyParser();
+      difyResponse.data.on('data', (chunk: Buffer) => {
+        let text = '';
+        parser.addStreamEventChunk(chunk);
+        if (parser.hasValidBuffer()) {
+          const messages = parser.getMessages();
+          text += messages.map((m) => m.answer).join('');
+          parser.resetBuffer();
+          res.write(text);
+        }
       });
-      
-      console.log('Dify応答内容:', difyResponse.data);
-      
-      // Return the response from Dify
-      return res.status(200).json({ 
-        output: difyResponse.data.answer || difyResponse.data.message || "応答なし" 
+
+      difyResponse.data.on('end', () => {
+        res.end();
       });
       
     } catch (error) {
