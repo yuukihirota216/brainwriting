@@ -11,7 +11,8 @@ export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
-): Promise<Response> {
+  onChunk?: (chunk: string) => void
+) {
   const res = await fetch(url, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
@@ -20,7 +21,36 @@ export async function apiRequest(
   });
 
   await throwIfResNotOk(res);
-  return res;
+
+  if (!res.body) {
+    throw new Error("レスポンスボディがありません");
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder("utf-8");
+  let result = "";
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      
+      if (done) {
+        break;
+      }
+      
+      const chunk = decoder.decode(value, { stream: true });
+      result += chunk;
+      
+      if (onChunk) {
+        onChunk(chunk);
+      }
+    }
+    
+    return result;
+  } catch (error) {
+    console.error("ストリーム読み取りエラー:", error);
+    throw error;
+  }
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
