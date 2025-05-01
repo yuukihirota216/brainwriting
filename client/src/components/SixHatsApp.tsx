@@ -13,15 +13,28 @@ import { useToast } from "@/hooks/use-toast";
 export default function SixHatsApp() {
   const [userInput, setUserInput] = useState("");
   const [responseText, setResponseText] = useState("");
+  const [isStreaming, setIsStreaming] = useState(false);
   const { toast } = useToast();
 
   const processMutation = useMutation({
     mutationFn: async (text: string) => {
-      const response = await apiRequest("POST", "/api/dify", { input: text });
-      return response.json();
-    },
-    onSuccess: (data) => {
-      setResponseText(data.output);
+      setResponseText("");
+      setIsStreaming(true);
+      
+      try {
+        const result = await apiRequest(
+          "POST", 
+          "/api/dify", 
+          { input: text },
+          (chunk) => {
+            setResponseText(prev => prev + chunk);
+          }
+        );
+        
+        return result;
+      } finally {
+        setIsStreaming(false);
+      }
     },
     onError: (error) => {
       toast({
@@ -64,9 +77,9 @@ export default function SixHatsApp() {
               isLoading={processMutation.isPending}
             />
 
-            {processMutation.isPending && <LoadingIndicator />}
+            {processMutation.isPending && !responseText && <LoadingIndicator />}
 
-            {responseText && !processMutation.isPending && (
+            {(responseText || isStreaming) && (
               <ResponseDisplay responseText={responseText} />
             )}
           </CardContent>
