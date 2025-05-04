@@ -1,8 +1,10 @@
 interface ResponseDisplayProps {
   responseText: string;
+  isGenerating: boolean;
+  generatingLogo: string;
 }
 
-export default function ResponseDisplay({ responseText }: ResponseDisplayProps) {
+export default function ResponseDisplay({ responseText, isGenerating, generatingLogo }: ResponseDisplayProps) {
   // Function to format the response text with color-coded hat names
   const formatResponseText = () => {
     let formattedText = responseText;
@@ -36,12 +38,15 @@ export default function ResponseDisplay({ responseText }: ResponseDisplayProps) 
   };
 
   return (
-    <div className="mt-8">
+    <div className="mt-8 relative">
       <h2 className="text-lg font-medium text-slate-800 mb-3">シックスハット分析結果</h2>
       <div 
         className="response-area p-4 bg-slate-50 rounded-md border border-slate-200 text-slate-700 whitespace-pre-line min-h-[150px] max-h-[400px] overflow-y-auto"
         dangerouslySetInnerHTML={{ __html: formatResponseText() }}
       />
+      {isGenerating  && (
+        <img src={generatingLogo} className="w-36 absolute top-0 right-0 bottom-0 left-0 m-auto" />
+      )}
     </div>
   );
 }
