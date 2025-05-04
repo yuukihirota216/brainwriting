@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "./Header";
 import InputForm from "./InputForm";
 import LoadingIndicator from "./LoadingIndicator";
@@ -9,23 +9,29 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import CrystalHatLogo from "../crystal-hat.png";
-
-// 画像の対応表
-const imagePaths = {
-  "img1": CrystalHatLogo,
-  "img2": CrystalHatLogo,
-  "img3": CrystalHatLogo,
-};
+import markdownit from 'markdown-it';
+import CrystalHatLogo from "@/../assets/crystal-hat.png";
 
 export default function SixHatsApp() {
   const [userInput, setUserInput] = useState("");
   const [responseText, setResponseText] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const { toast } = useToast();
-  const [logo1Visibility, setLogo1Visibility] = useState(false);
-  const [logo2Visibility, setLogo2Visibility] = useState(false);
-  const [logo3Visibility, setLogo3Visibility] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const md = markdownit();
+
+  useEffect(() => {
+    const tokens = md.parse(responseText);
+
+    tokens.forEach((token: any, idx: number) => {
+      if (token.type === 'heading_open') {
+        const inline = tokens[idx + 1];
+        if (inline && inline.type === 'inline') {
+          setIsGenerating(!tokens[idx + 3]);
+        }
+      }
+    });
+  }, [responseText]);
 
   const processMutation = useMutation({
     mutationFn: async (text: string) => {
@@ -38,36 +44,6 @@ export default function SixHatsApp() {
           "/api/dify", 
           { input: text },
           (chunk) => {
-            if (chunk.indexOf("<img1>") >= 0) {
-              console.log("open img1");
-              chunk = chunk.replace("<img1>\n", "");
-              setLogo1Visibility(true);
-            }
-            if (chunk.indexOf("</img1>") >= 0) {
-              console.log("close img1");
-              chunk = chunk.replace("</img1>\n", "");
-              setLogo1Visibility(false);
-            }
-            if (chunk.indexOf("<img2>") >= 0) {
-              console.log("open img2");
-              chunk = chunk.replace("<img2>\n", "");
-              setLogo2Visibility(true);
-            }
-            if (chunk.indexOf("</img2>") >= 0) {
-              console.log("close img2");
-              chunk = chunk.replace("</img2>\n", "");
-              setLogo2Visibility(false);
-            }
-            if (chunk.indexOf("<img3>") >= 0) {
-              console.log("open img3");
-              chunk = chunk.replace("<img3>\n", "");
-              setLogo3Visibility(true);
-            }
-            if (chunk.indexOf("</img3>") >= 0) {
-              console.log("close img3");
-              chunk = chunk.replace("</img3>\n", "");
-              setLogo3Visibility(false);
-            }
             setResponseText(prev => prev + chunk);
           }
         );
@@ -121,16 +97,11 @@ export default function SixHatsApp() {
             {processMutation.isPending && !responseText && <LoadingIndicator />}
 
             {(responseText || isStreaming) && (
-              <ResponseDisplay responseText={responseText} />
-            )}
-            {logo1Visibility  && (
-              <img src={imagePaths["img1"]} />
-            )}
-            {logo2Visibility  && (
-              <img src={imagePaths["img2"]} />
-            )}
-            {logo3Visibility  && (
-              <img src={imagePaths["img3"]} />
+              <ResponseDisplay
+                responseText={responseText}
+                isGenerating={isGenerating}
+                generatingLogo={CrystalHatLogo}
+              />
             )}
           </CardContent>
         </Card>
