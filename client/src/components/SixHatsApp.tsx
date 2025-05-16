@@ -12,12 +12,20 @@ import { useToast } from "@/hooks/use-toast";
 import markdownit from 'markdown-it';
 import CrystalHatLogo from "@/../assets/crystal-hat.png";
 
+// 見出しと表示するロゴの対応表
+const generatingLogoMap = {
+  "肯定的な意見": CrystalHatLogo,
+  "否定的な意見": CrystalHatLogo,
+  "まとめ": CrystalHatLogo,
+};
+
 export default function SixHatsApp() {
   const [userInput, setUserInput] = useState("");
   const [responseText, setResponseText] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generatingLogo, setGeneratingLogo] = useState("");
   const md = markdownit();
 
   useEffect(() => {
@@ -28,6 +36,7 @@ export default function SixHatsApp() {
         const inline = tokens[idx + 1];
         if (inline && inline.type === 'inline') {
           setIsGenerating(!tokens[idx + 3]);
+          setGeneratingLogo(generatingLogoMap[inline.content as keyof typeof generatingLogoMap]);
         }
       }
     });
@@ -100,7 +109,7 @@ export default function SixHatsApp() {
               <ResponseDisplay
                 responseText={responseText}
                 isGenerating={isGenerating}
-                generatingLogo={CrystalHatLogo}
+                generatingLogo={generatingLogo}
               />
             )}
           </CardContent>

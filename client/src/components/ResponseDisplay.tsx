@@ -45,7 +45,7 @@ export default function ResponseDisplay({ responseText, isGenerating, generating
         dangerouslySetInnerHTML={{ __html: formatResponseText() }}
       />
       {isGenerating  && (
-        <img src={generatingLogo} className="w-36 absolute top-0 right-0 bottom-0 left-0 m-auto" />
+        <img src={generatingLogo} className="w-36 absolute top-0 right-0 bottom-0 left-0 m-auto shadow-md" />
       )}
     </div>
   );
