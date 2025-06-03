@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "./Header";
 import InputForm from "./InputForm";
 import LoadingIndicator from "./LoadingIndicator";
@@ -9,12 +9,38 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import markdownit from 'markdown-it';
+import CrystalHatLogo from "@/../assets/crystal-hat.png";
+
+// 見出しと表示するロゴの対応表
+const generatingLogoMap = {
+  "肯定的な意見": CrystalHatLogo,
+  "否定的な意見": CrystalHatLogo,
+  "まとめ": CrystalHatLogo,
+};
 
 export default function SixHatsApp() {
   const [userInput, setUserInput] = useState("");
   const [responseText, setResponseText] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const { toast } = useToast();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatingLogo, setGeneratingLogo] = useState("");
+  const md = markdownit();
+
+  useEffect(() => {
+    const tokens = md.parse(responseText);
+
+    tokens.forEach((token: any, idx: number) => {
+      if (token.type === 'heading_open') {
+        const inline = tokens[idx + 1];
+        if (inline && inline.type === 'inline') {
+          setIsGenerating(!tokens[idx + 3]);
+          setGeneratingLogo(generatingLogoMap[inline.content as keyof typeof generatingLogoMap]);
+        }
+      }
+    });
+  }, [responseText]);
 
   const processMutation = useMutation({
     mutationFn: async (text: string) => {
@@ -80,7 +106,11 @@ export default function SixHatsApp() {
             {processMutation.isPending && !responseText && <LoadingIndicator />}
 
             {(responseText || isStreaming) && (
-              <ResponseDisplay responseText={responseText} />
+              <ResponseDisplay
+                responseText={responseText}
+                isGenerating={isGenerating}
+                generatingLogo={generatingLogo}
+              />
             )}
           </CardContent>
         </Card>
